@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/lodash@4.16.0"></script>
     <script src="./node_modules/vue/dist/vue.min.js"></script>
+    <script src="./node_modules/vue-resource/dist/vue-resource.min.js"></script>
   </head>
   <body>
 
@@ -16,6 +17,8 @@
 
     <script>
       const NEWLINE = "\n";
+      //TODO: move to configuration file
+      const WORDNIK_API_KEY = "9faca820768326b5d4b0f077e2f0408be427b5c489831f504";
       new Vue({
         el: "#board",
 
@@ -26,7 +29,8 @@
           input: `PIEG
 OZLN
 TRNE
-SNAR`
+SNAR`,
+          words: []
         },
         computed: {
           boggleSolutions: function ()
@@ -48,8 +52,31 @@ SNAR`
         },
         methods: {
           update: _.debounce(function (e) {
+            this.words = [];
             this.input = e.target.value
-          }, 300)
+          }, 300),
+
+          // looks up word in dictionary
+          // returns boolean, true for dictionary word, false otherwise
+          checkWord: function(word)
+          {
+            var url = `http://api.wordnik.com/v4/word.json/${word}?api_key=${WORDNIK_API_KEY}`;
+
+            this.$http.get(url).then(response =>
+            {
+              // if this is a dictionary word, push it to the words array
+              // infer whether or not this is a dictional word by presence
+              // of "suggestions" or "canonicalForm" properties in response
+              if (response.body.hasOwnProperty("suggestions")
+                  || response.body.hasOwnProperty("canonicalForm"))
+              {
+                this.words.push(word);
+              }
+
+            }, response => {
+              // error callback
+            });
+          }
         }
       })
     </script>

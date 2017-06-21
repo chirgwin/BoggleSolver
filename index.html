@@ -17,12 +17,20 @@
     <script>
       new Vue({
         el: "#board",
+
+        //TODO: consider dimensional contraints/validation of input
+        // sample board from here:
+        // https://www.pinterest.com/pin/334533078540099439
         data: {
-          input: "" //TODO: sample board?
+          input: `PIEG
+OZLN
+TRNE
+SNAR`
         },
         computed: {
           boggleSolutions: function ()
           {
+            //TODO:parse input into a 2-D array
             //TODO: find words!
             return this.input;
           }

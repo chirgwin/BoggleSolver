@@ -1,3 +1,5 @@
+// layout inspired heavily by VueJS "markdown" example:
+// https://github.com/vuejs/vue/tree/dev/examples/markdown
 html, body, #board
 {
   margin: 0;

@@ -15,6 +15,7 @@
     </div>
 
     <script>
+      const NEWLINE = "\n";
       new Vue({
         el: "#board",
 
@@ -30,7 +31,17 @@ SNAR`
         computed: {
           boggleSolutions: function ()
           {
-            //TODO:parse input into a 2-D array
+            // parse input into a 2-D array
+            // split into lines
+            var lines = this.input.split(NEWLINE);
+            var board = [];
+            lines.forEach(function(line)
+            {
+              // split chars in each line
+              var lineChars = line.split("");
+              board.push(lineChars);
+            });
+
             //TODO: find words!
             return this.input;
           }

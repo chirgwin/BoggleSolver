@@ -12,17 +12,23 @@
 
     <div id="board">
       <textarea :value="input" @input="update"></textarea>
-      <div v-html="boggleSolutions"></div>
+      <div>
+        <li v-for="word in words">
+          {{ word }}
+        </li>
+      </div>
     </div>
 
     <script>
+      //TODO: move this script to separate file
+
       const NEWLINE = "\n";
-      //TODO: move to configuration file
+      //TODO: move to configuration file, secure/obfuscate
       const WORDNIK_API_KEY = "9faca820768326b5d4b0f077e2f0408be427b5c489831f504";
       new Vue({
         el: "#board",
 
-        //TODO: consider dimensional contraints/validation of input
+        // TODO: consider dimensional contraints/validation of input
         // sample board from here:
         // https://www.pinterest.com/pin/334533078540099439
         data: {
@@ -33,8 +39,13 @@ SNAR`,
           words: []
         },
         computed: {
-          boggleSolutions: function ()
-          {
+        },
+        methods: {
+          //TODO: ensure this gets called on initial load
+          update: _.debounce(function (e) {
+            this.words = [];
+            console.log("here");
+            this.input = e.target.value;
             // parse input into a 2-D array
             // split into lines
             var lines = this.input.split(NEWLINE);
@@ -47,17 +58,11 @@ SNAR`,
             });
 
             //TODO: find words!
-            return this.input;
-          }
-        },
-        methods: {
-          update: _.debounce(function (e) {
-            this.words = [];
-            this.input = e.target.value
-          }, 300),
 
+          }, 300),
           // looks up word in dictionary
-          // returns boolean, true for dictionary word, false otherwise
+          // adds dictionary word to `words` array,
+          // does nothing for non-dictionary words
           checkWord: function(word)
           {
             var url = `http://api.wordnik.com/v4/word.json/${word}?api_key=${WORDNIK_API_KEY}`;
@@ -70,6 +75,7 @@ SNAR`,
               if (response.body.hasOwnProperty("suggestions")
                   || response.body.hasOwnProperty("canonicalForm"))
               {
+                //TODO: eliminate repeated words?
                 this.words.push(word);
               }
 

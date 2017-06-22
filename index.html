@@ -23,6 +23,7 @@
       //TODO: move this script to separate file
 
       const NEWLINE = "\n";
+      const MIN_WORD_LENGTH = 3;
       //TODO: move to configuration file, secure/obfuscate
       const WORDNIK_API_KEY = "9faca820768326b5d4b0f077e2f0408be427b5c489831f504";
       new Vue({
@@ -44,7 +45,6 @@ SNAR`,
           //TODO: ensure this gets called on initial load
           update: _.debounce(function (e) {
             this.words = [];
-            console.log("here");
             this.input = e.target.value;
             // parse input into a 2-D array
             // split into lines
@@ -57,7 +57,8 @@ SNAR`,
               board.push(lineChars);
             });
 
-            //TODO: find words!
+            //find words
+            this.findWords(board);
 
           }, 300),
           // looks up word in dictionary
@@ -82,6 +83,53 @@ SNAR`,
             }, response => {
               // error callback
             });
+          },
+          // TODO: improve performance; consider trie search
+          // agorithm heavily inspired by http://www.geeksforgeeks.org/boggle-find-possible-words-board-characters/
+          findWords: function(board)
+          {
+            var visited = [];
+            // init all visited cells to false
+            for (var i = 0; i < board.length; i++)
+            {
+              visited[i] = [];
+              for (var j = 0; j < board[0].length; j++)
+              {
+                visited[i][j] = false;
+              }
+            }
+            var str = "";
+            for (i = 0; i < board.length; i++)
+            {
+              for (var j = 0; j < board[0].length; j++)
+              {
+                this.findWordsUtil(board, visited, i, j, str)
+              }
+            }
+          },
+          findWordsUtil: function(board, i, j, str)
+          {
+            this.visited[i][j] = true;
+            str += board[i][j];
+            if (str.length >= MIN_WORD_LENGTH)
+            {
+              this.checkWord(str);
+            }
+
+            for (var row = i-1; row <= i+1 && row < board.length; row++)
+            {
+              for (var col = j-1; col <= j+1 && col < board[0].length; col++)
+              {
+                if (row >= 0 && col >= 0 && !visited[row][col])
+                {
+                  // recurse
+                  this.findWordsUtil(board, visited, row, col, str);
+                }
+              }
+            }
+
+            str = str.substr(0, str.length - 1);
+            this.visited[i][j] = false;
           }
         }
       })

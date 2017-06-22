@@ -115,3 +115,7 @@ vue@^2.3.3:
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.3.4.tgz#5ec3b87a191da8090bbef56b7cfabd4158038171"
 
+word-list-json:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/word-list-json/-/word-list-json-0.2.0.tgz#b8d2c934e9129bffb0e48f64af71020691f78a1f"
+

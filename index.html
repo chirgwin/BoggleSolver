@@ -11,6 +11,7 @@
   <body>
 
     <div id="board">
+      <!-- TODO: display indeterminate progress spinner while loading/working-->
       <textarea :value="input" @input="update"></textarea>
       <div>
         <li v-for="word in words">
@@ -46,6 +47,25 @@ SNAR`,
           update: _.debounce(function (e) {
             this.words = [];
             this.input = e.target.value;
+
+            //find words
+            this.findWords();
+
+          }, 300),
+          // looks up word in dictionary
+          // adds dictionary word to `words` array,
+          // does nothing for non-dictionary words
+          checkWord: function(word)
+          {
+            if (dictionary.indexOf(word.toLowerCase()) >= 0)
+            {
+              this.words.push(word);
+            }
+          },
+          // TODO: improve performance; consider trie search
+          // this naive agorithm heavily inspired by http://www.geeksforgeeks.org/boggle-find-possible-words-board-characters/
+          findWords: function()
+          {
             // parse input into a 2-D array
             // split into lines
             var lines = this.input.split(NEWLINE);
@@ -57,21 +77,6 @@ SNAR`,
               board.push(lineChars);
             });
 
-            //find words
-            this.findWords(board);
-
-          }, 300),
-          // looks up word in dictionary
-          // adds dictionary word to `words` array,
-          // does nothing for non-dictionary words
-          checkWord: function(word)
-          {
-            return dictionary.indexOf(word) >= 0;
-          },
-          // TODO: improve performance; consider trie search
-          // agorithm heavily inspired by http://www.geeksforgeeks.org/boggle-find-possible-words-board-characters/
-          findWords: function(board)
-          {
             this.visited = [];
             // init all visited cells to false
             for (var i = 0; i < board.length; i++)
@@ -95,6 +100,8 @@ SNAR`,
           {
             this.visited[i][j] = true;
             str += board[i][j];
+
+            //cheat a little here to improve performance
             if (str.length >= MIN_WORD_LENGTH && str.length <= MAX_WORD_LENGTH)
             {
               this.checkWord(str);

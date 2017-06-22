@@ -42,6 +42,10 @@ SNAR`,
         },
         computed: {
         },
+        created: function () {
+          // update on load
+          this.findWords();
+        },
         methods: {
           //TODO: ensure this gets called on initial load
           update: _.debounce(function (e) {
@@ -62,6 +66,7 @@ SNAR`,
               this.words.push(word);
             }
           },
+
           // TODO: improve performance; consider trie search
           // this naive agorithm heavily inspired by http://www.geeksforgeeks.org/boggle-find-possible-words-board-characters/
           findWords: function()
